@@ -119,7 +119,8 @@ add_action( 'wp_before_admin_bar_render', 'mytheme_admin_bar_render' );
 function simple_feed_request( $rss ) {
 	if ( isset( $rss[ 'feed' ] ) && !isset( $rss['post_type'] ) ) {
 		// Return all post types
-		$rss['post_type'] =  
+		$post_types = get_post_types();
+		$rss['post_type'] = $post_types;
 		// Return posts of post types of your choice like 'post' and 'news'
 		//$rss['post_type'] = array( 'post', 'news' );
 	}
