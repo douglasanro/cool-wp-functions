@@ -492,7 +492,7 @@ add_filter( 'intermediate_image_sizes_advanced', 'remove_default_image_sizes' );
 function simple_add_custom_types( $query ) {
 	if( is_category() || is_tag() && empty( $query->query_vars['suppress_filters'] ) ) {
 		$post_types = get_post_types();
-		$query->set( 'post_type', $post_type );
+		$query->set( 'post_type', $post_types );
 		return $query;
 	}
 }
