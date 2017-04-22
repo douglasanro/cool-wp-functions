@@ -119,8 +119,7 @@ add_action( 'wp_before_admin_bar_render', 'mytheme_admin_bar_render' );
 function simple_feed_request( $rss ) {
 	if ( isset( $rss[ 'feed' ] ) && !isset( $rss['post_type'] ) ) {
 		// Return all post types
-		$post_types = get_post_types();
-		$rss['post_type'] = $post_types;
+		$rss['post_type'] = 'any';
 		// Return posts of post types of your choice like 'post' and 'news'
 		//$rss['post_type'] = array( 'post', 'news' );
 	}
@@ -450,8 +449,7 @@ If you have `cpt` with `tags` and use `numeric_posts_nav` function add this to f
 
 function tagfix_add_custom_types( $query ) {
 	if( is_tag() && $query->is_main_query() ) {
-		$post_types = get_post_types();
-		$query->set( 'post_type', $post_types );
+		$query->set( 'post_type', 'any' );
 	}
 }
 add_filter( 'pre_get_posts', 'tagfix_add_custom_types' );
@@ -491,8 +489,7 @@ add_filter( 'intermediate_image_sizes_advanced', 'remove_default_image_sizes' );
 
 function simple_add_custom_types( $query ) {
 	if( is_category() || is_tag() && empty( $query->query_vars['suppress_filters'] ) ) {
-		$post_types = get_post_types();
-		$query->set( 'post_type', $post_types );
+		$query->set( 'post_type', 'any' );
 		return $query;
 	}
 }
@@ -508,21 +505,17 @@ add_filter( 'pre_get_posts', 'simple_add_custom_types');
 
 if ( is_admin() ) {
 	add_filter( 'dashboard_recent_posts_query_args', 'add_page_to_dashboard_activity' );
-	function add_page_to_dashboard_activity( $query ) {
+	function add_page_to_dashboard_activity( $query_args ) {
 		// Return all post types
-		$post_types = get_post_types();
-		// Return post types of your choice
-		// $post_types = ['post', 'foo', 'bar'];
-		if ( is_array( $query['post_type'] ) ) {
-			$query['post_type'] = $post_types;
-		} else {
-			$temp = $post_types;
-			$query['post_type'] = $temp;
+		$query_args['post_type'] = 'any';
+		// Or return post types of your choice
+		// query_args['post_type'] = array( 'post', 'foo', 'bar' );
+		if ( $query_args['post_status'] == 'publish' ) {
+			$query_args['posts_per_page'] = 5;
 		}
-		return $query;
+		return $query_args;
 	}
 }
-
 ```
 
 ## Remove all dashboard widgets
