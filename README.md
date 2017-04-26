@@ -52,7 +52,8 @@ function simple_remove_default_post_type() {
 	register_post_type( 'post', array(
 		'capability_type' => 'post',
         	'capabilities' => array(
-			'create_posts' => 'do_not_allow', // false < WP 4.5, credit @Ewout
+			'create_posts' => 'do_not_allow', // false < WP 4.5
+			'edit_posts' => 'do_not_allow', // false < WP 4.5
   		),
 		'map_meta_cap' => false
 	) );
