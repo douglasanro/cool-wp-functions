@@ -49,9 +49,13 @@ Use this to remove `Posts` if your theme dont use it at all.
 
 add_action( 'init', 'simple_remove_default_post_type', 1 );
 function simple_remove_default_post_type() {
-		register_post_type( 'post', array(
-				'map_meta_cap' => false
-		) );
+	register_post_type( 'post', array(
+		'capability_type' => 'post',
+        	'capabilities' => array(
+			'create_posts' => 'do_not_allow', // false < WP 4.5, credit @Ewout
+  		),
+		'map_meta_cap' => false
+	) );
 }
 ```
 
