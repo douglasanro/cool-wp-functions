@@ -51,10 +51,12 @@ add_action( 'init', 'simple_remove_default_post_type', 1 );
 function simple_remove_default_post_type() {
 	register_post_type( 'post', array(
 		'capability_type' => 'post',
-        	'capabilities' => array(
+		'capabilities' => array(
+			'edit_post' => 'do_not_allow', // false < WP 4.5
+			'publish_posts' => 'do_not_allow', // false < WP 4.5
 			'create_posts' => 'do_not_allow', // false < WP 4.5
 			'edit_posts' => 'do_not_allow', // false < WP 4.5
-  		),
+		),
 		'map_meta_cap' => false
 	) );
 }
@@ -221,7 +223,7 @@ function simple_breadcrumbs() {
 	$show_on_home   = 0; // 1 - show breadcrumbs on the homepage, 0 - don't show
 	$show_home_link = 1; // 1 - show the 'Home' link, 0 - don't show
 	$show_title     = 1; // 1 - show the title for the links, 0 - don't show
-	$delimiter      = ' &raquo; '; // delimiter between crumbs
+	$delimiter      = ' &gt; '; // delimiter between crumbs
 	$before         = '<span class="current">'; // tag before the current crumb
 	$after          = '</span>'; // tag after the current crumb
 	/* === END OF OPTIONS === */
@@ -278,7 +280,7 @@ function simple_breadcrumbs() {
 			if ( get_post_type() != 'post' ) {
 				$post_type = get_post_type_object(get_post_type());
 				$slug = $post_type->rewrite;
-				printf($link, $home_link . '/' . $slug['slug'] . '/', $post_type->labels->singular_name);
+				printf($link, $home_link . $slug['slug'] . '/', $post_type->labels->name);
 				if ($show_current == 1) echo $delimiter . $before . get_the_title() . $after;
 			} else {
 				$cat = get_the_category(); $cat = $cat[0];
@@ -293,7 +295,7 @@ function simple_breadcrumbs() {
 
 		} elseif ( !is_single() && !is_page() && get_post_type() != 'post' && !is_404() ) {
 			$post_type = get_post_type_object(get_post_type());
-			echo $before . $post_type->labels->singular_name . $after;
+			echo $before . $post_type->labels->name . $after;
 
 		} elseif ( is_attachment() ) {
 			$parent = get_post($parent_id);
@@ -343,9 +345,9 @@ function simple_breadcrumbs() {
 		}
 
 		if ( get_query_var('paged') ) {
-			if ( is_category() || is_day() || is_month() || is_year() || is_search() || is_tag() || is_author() ) echo ' (';
-			echo __(' > Page') . ' ' . get_query_var('paged');
-			if ( is_category() || is_day() || is_month() || is_year() || is_search() || is_tag() || is_author() ) echo ')';
+			if ( is_category() || is_day() || is_month() || is_year() || is_search() || is_tag() || is_author() || is_archive() || is_page() ) echo ' (';
+			echo __('Page') . ' ' . get_query_var('paged');
+			if ( is_category() || is_day() || is_month() || is_year() || is_search() || is_tag() || is_author() || is_archive() || is_page() ) echo ')';
 		}
 
 		echo '</div><!-- .breadcrumbs -->';
