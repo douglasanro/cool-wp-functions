@@ -23,6 +23,7 @@
 * [Modify excerpt length](#modify-excerpt-length)
 * [Change more excerpt](#change-more-excerpt)
 * [Create WordPress settings page For custom options](#create-wordpress-settings-page-for-custom-options)
+* [Create related posts function](#create-related-posts-function)
 * [Add Bootstrap 3 navigation style to WordPress menu manager](#add-bootstrap-3-navigation-style-to-wordpress-menu-manager)
 
 ## Remove WordPress version from header
@@ -295,7 +296,8 @@ function simple_breadcrumbs() {
 
 		} elseif ( !is_single() && !is_page() && get_post_type() != 'post' && !is_404() ) {
 			$post_type = get_post_type_object(get_post_type());
-			echo $before . $post_type->labels->name . $after;
+			//echo $before . $post_type->labels->name . $after;
+			echo $before . post_type_archive_title() . $after;
 
 		} elseif ( is_attachment() ) {
 			$parent = get_post($parent_id);
@@ -632,6 +634,12 @@ For better maintainability of our code, let’s create a PHP class in separate f
 
 // wp-content/themes/your-theme/simple_settings_page.php
 
+// add permission to role editor (or other role) manage the settings page
+add_filter( 'option_page_capability_custom_settings_group', 'simple_custom_settings_group_capability' );
+function simple_custom_settings_group_capability( $cap ) {
+	return 'edit_theme_options';
+}
+
 class simple_settings_page {
 	/**
 	 * Array of custom settings/options
@@ -775,6 +783,39 @@ When you will want to get those options somewhere else, just use get_option func
 $custom_settings = get_option( 'custom_settings' );
 $custom_setting_1 = $custom_settings['custom_setting_1'];
 $custom_setting_2 = $custom_settings['custom_setting_2'];
+```
+
+## Create related posts function
+
+```php
+/* ----------------------------------------------------------------------------
+ * Related Posts Function, matches posts by tags - call using simple_related_posts();
+ * ------------------------------------------------------------------------- */
+function simple_related_posts() {
+	global $post;
+	$tags = wp_get_post_tags( $post->ID );
+	if($tags) {
+		foreach( $tags as $tag ) {
+			$tag_arr .= $tag->slug . ',';
+	}
+		$args = array(
+			'post_type' => array ( 'post', 'news' ), /* Add post types of your choice */
+			'tag' => $tag_arr,
+			'numberposts' => 3, /* You can change this to show more */
+			'post__not_in' => array( $post->ID )
+		);
+
+		$related_posts = get_posts( $args );
+		if($related_posts) {
+			echo '<div class="related-posts">';
+			foreach ( $related_posts as $post ) : setup_postdata( $post );
+				echo '<p><a href="' . get_permalink() . '">' . get_the_title() . ' ></a></p>';
+			endforeach;
+			echo '</div>';
+		}
+	}
+	wp_reset_postdata();
+}
 ```
 
 ## Add Bootstrap 3 navigation style to WordPress menu manager
